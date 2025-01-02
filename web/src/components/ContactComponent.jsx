@@ -9,6 +9,7 @@ import {
   MdOutlineSearch,
   MdDelete,
   MdClose,
+  MdOutlineMessage,
 } from "react-icons/md";
 import { FaShare } from "react-icons/fa6";
 import LoadingComponent from "./LoadingComponent";
@@ -174,13 +175,12 @@ const ContactComponent = ({ isShow }) => {
         <LoadingComponent />
       ) : (
         <div
-          className="no-scrollbar flex flex-col w-full h-full text-white overflow-y-auto"
+          className="no-scrollbar flex flex-col w-full h-full text-white overflow-y-auto p-2"
           style={{
             paddingTop: 60,
           }}
         >
-          <div className="bg-black flex items-center w-full pb-3 pt-1">
-            <div className="w-2"></div>
+          <div className="bg-[black] flex items-center w-full pb-3 pt-1">
             <div className="relative w-full">
               <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                 <MdOutlineSearch className="text-lg" />
@@ -188,7 +188,7 @@ const ContactComponent = ({ isShow }) => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="text-sm w-full text-white flex-1 border border-gray-700 focus:outline-none rounded-full px-2 py-1 pl-8 bg-[#3B3B3B]"
+                className="text-sm w-full text-white flex-1 border border-gray-700 focus:outline-none rounded-full px-2 py-1 pl-8 bg-[#242426]"
                 autoComplete="off"
                 onKeyUp={(e) => {
                   const data = searchByKeyValueContains(
@@ -200,21 +200,20 @@ const ContactComponent = ({ isShow }) => {
                 }}
               />
             </div>
-            <div className="w-2"></div>
           </div>
           {contacts.map((v, i) => {
             return (
               <div
-                className="flex flex-col w-full justify-between border-b border-gray-900 pb-2 mb-2"
+                className=" flex flex-row w-full justify-between items-center py-1.5  mb-2 rounded-xl hover:bg-[#303032]"
                 key={i}
               >
                 <div
-                  className="flex space-x-3 items-center w-full pl-1 cursor-pointer"
-                  onClick={() => setSelected(selected == i ? null : i)}
+                  className="flex space-x-2 items-center w-full pl-1 cursor-pointer"
+                  onClick={() => setFormEdit(v)}
                 >
                   <img
                     src={v.avatar}
-                    className="w-9 h-9 object-cover rounded-full"
+                    className="w-8 h-8 object-cover rounded-full"
                     alt=""
                     onError={(error) => {
                       error.target.src = "./images/noimage.jpg";
@@ -222,51 +221,18 @@ const ContactComponent = ({ isShow }) => {
                   />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium line-clamp-1">
-                      {v.name}
+                    {v.name}
                     </span>
-                    <span className="text-xs text-gray-600">
+                    <span className="text-sm text-gray-600">
                       {v.phone_number}
                     </span>
                   </div>
                 </div>
                 <div
-                  className="pt-2 pb-1"
-                  style={{
-                    display: selected == i ? "flex" : "none",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="h-full flex flex-row items-center justify-center"
                 >
                   <div
-                    className="border border-gray-800 hover:bg-gray-800 rounded-lg mr-4"
-                    onClick={() => setFormEdit(v)}
-                  >
-                    <MdEdit className="cursor-pointer text-2xl m-1" />
-                  </div>
-                  <div
-                    className="border border-gray-800 hover:bg-gray-800 rounded-lg mr-4"
-                    onClick={async () => {
-                      await axios
-                        .post("/new-or-continue-chat", {
-                          to_citizenid: v.contact_citizenid,
-                        })
-                        .then(function (response) {
-                          if (response.data) {
-                            setChatting(response.data);
-                            setMenu(MENU_MESSAGE_CHATTING);
-                            setSelected(null);
-                          }
-                        })
-                        .catch(function (error) {
-                          console.log(error);
-                        })
-                        .finally(function () {});
-                    }}
-                  >
-                    <MdWhatsapp className="cursor-pointer text-2xl text-[#33C056] m-1" />
-                  </div>
-                  <div
-                    className="border border-gray-800 hover:bg-gray-800 rounded-lg mr-4"
+                    className="w-full h-full place-content-center cursor-pointer px-1"
                     onClick={async () => {
                       let result = null;
                       try {
@@ -281,9 +247,9 @@ const ContactComponent = ({ isShow }) => {
                       }
                     }}
                   >
-                    <MdOutlinePhone className="cursor-pointer text-2xl text-yellow-600 m-1" />
+                    <MdOutlinePhone className="hover:text-gray-50  text-lg text-gray-100 m-1" />
                   </div>
-                  <div
+                  {/* <div
                     className="border border-gray-800 hover:bg-gray-800 rounded-lg"
                     onClick={async () => {
                       await axios
@@ -307,7 +273,29 @@ const ContactComponent = ({ isShow }) => {
                         .finally(function () {});
                     }}
                   >
-                    <MdDelete className="cursor-pointer text-2xl text-red-600 m-1" />
+                    <MdDelete className="cursor-pointer text-lg text-red-600 m-1" />
+                  </div> */}
+                   <div
+                    className="w-full h-full place-content-center cursor-pointer px-1"
+                    onClick={async () => {
+                      await axios
+                        .post("/new-or-continue-chat", {
+                          to_citizenid: v.contact_citizenid,
+                        })
+                        .then(function (response) {
+                          if (response.data) {
+                            setChatting(response.data);
+                            setMenu(MENU_MESSAGE_CHATTING);
+                            setSelected(null);
+                          }
+                        })
+                        .catch(function (error) {
+                          console.log(error);
+                        })
+                        .finally(function () {});
+                    }}
+                  >
+                    <MdOutlineMessage className="hover:text-gray-50 cursor-pointer text-lg text-gray-100 m-1" />
                   </div>
                 </div>
               </div>
