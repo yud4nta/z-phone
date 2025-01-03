@@ -10,6 +10,7 @@ import {
   MdDelete,
   MdClose,
   MdOutlineMessage,
+  MdKeyboardBackspace 
 } from "react-icons/md";
 import { FaShare } from "react-icons/fa6";
 import LoadingComponent from "./LoadingComponent";
@@ -80,17 +81,91 @@ const ContactComponent = ({ isShow }) => {
       }}
     >
       <div
-        className={`no-scrollbar absolute w-full z-30 overflow-auto py-10 text-white ${
+        className={`no-scrollbar absolute w-full z-30 overflow-auto text-white ${
           formEdit ? "visible" : "invisible"
         }`}
         style={{
           height: resolution.layoutHeight,
           width: resolution.layoutWidth,
-          backgroundColor: "rgba(31, 41, 55, 0.8)",
+          backgroundColor: "black",
         }}
       >
-        <div className="flex flex-col justify-center rounded-xl h-full w-full px-3">
-          <div className="bg-slate-700 rounded-lg py-2 flex flex-col w-full p-3">
+        <div className="absolute top-0 flex w-full justify-between py-2 pt-8 z-10">
+            <div className="flex items-center px-2 text-blue-500 cursor-pointer" onClick={() => setFormEdit(null)}>
+              <MdArrowBackIosNew className="text-lg" />
+              <span className="text-xs">Back</span>
+            </div>
+            <span className="absolute left-0 right-0 m-auto text-sm text-white w-fit">
+              Edit Contact
+            </span>
+            <div className="flex items-center space-x-1 px-2 group text-red-600 hover:text-red-600">
+                <span className="text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                 Delete
+               </span>
+              <MdDelete
+                className="text-xl"
+                onClick={async () => {
+                  await axios
+                    .post("/delete-contact", {
+                      contact_citizenid: v.contact_citizenid,
+                    })
+                    .then(function (response) {
+                      if (response.data) {
+                        const newContacts = contacts.filter(
+                          (item) =>
+                            item.contact_citizenid !== v.contact_citizenid
+                        );
+                        setContacts(newContacts);
+                        setContactsBk(newContacts);
+                        setSelected(null);
+                      }
+                    })
+                    .catch(function (error) {
+                      console.log(error);
+                    })
+                    .finally(function () {});
+                }}
+              />
+            </div>
+        </div>
+        
+        <div 
+          className="flex flex-col h-full w-full pt-8 space-y-2 px-2"
+          style={{
+            paddingTop: 60,
+          }}
+        >
+          <form onSubmit={handleEditSubmit} className="grid gap-2">
+            <div>
+              <label for="name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+              <input 
+                id="name" 
+                className="bg-gray-700 border border-gray-300 text-white text-sm rounded-lg block w-full p-2 outline-none"
+                name="name"
+                value={formEdit?.name}
+                placeholder="John"
+                onChange={handleEdit}
+                autoComplete="off"
+                required
+               />
+            </div>
+            <div>
+              <label for="number" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Number</label>
+              <input 
+                id="number" 
+                className="bg-gray-700 border border-gray-300 text-white text-sm rounded-lg block w-full p-2 outline-none"
+                value={formEdit?.phone_number}
+              />
+            </div>
+            <button
+                className="flex font-medium rounded-full text-white bg-blue-500 px-3 py-2 text-sm items-center justify-center mt-2"
+                type="submit"
+            >
+              <span>SAVE</span>
+            </button>
+          </form>
+
+          {/* <div className="rounded-lg py-2 flex flex-col w-full h-full">
             <div className="flex justify-between items-center pb-2">
               <span className="truncate font-semibold">Update Contact</span>
               <div>
@@ -134,9 +209,10 @@ const ContactComponent = ({ isShow }) => {
                 </div>
               </div>
             </form>
-          </div>
+          </div> */}
         </div>
       </div>
+
       <div className="absolute top-0 flex w-full justify-between py-2 bg-black pt-8 z-10">
         <div
           className="flex items-center px-2 text-blue-500 cursor-pointer"
@@ -221,7 +297,7 @@ const ContactComponent = ({ isShow }) => {
                   />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium line-clamp-1">
-                    {v.name}
+                    {v.name} 
                     </span>
                     <span className="text-sm text-gray-600">
                       {v.phone_number}
